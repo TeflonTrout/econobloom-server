@@ -106,9 +106,10 @@ app.get('/metadata/:tokenId', (req, res) => {
     res.json(metadata);
 });
 
-app.post('/fetch-rsi', async (req, res) => {
+app.get('/fetch-rsi', async (req, res) => {
     try {
         const response = await axios.get(`https://api.taapi.io/rsi?secret=${API_SECRET_KEY}&exchange=binance&symbol=ETH/USDT&interval=1d`);
+        console.log(response.data)
         res.json({ rsi: response.data });
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch RSI' });

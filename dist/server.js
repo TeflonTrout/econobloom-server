@@ -108,9 +108,10 @@ app.get('/metadata/:tokenId', (req, res) => {
     };
     res.json(metadata);
 });
-app.post('/fetch-rsi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get('/fetch-rsi', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield axios_1.default.get(`https://api.taapi.io/rsi?secret=${API_SECRET_KEY}&exchange=binance&symbol=ETH/USDT&interval=1d`);
+        console.log(response.data);
         res.json({ rsi: response.data });
     }
     catch (error) {
