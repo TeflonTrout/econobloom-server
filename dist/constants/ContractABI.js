@@ -4,6 +4,13 @@ exports.CONTRACT_ABI = void 0;
 exports.CONTRACT_ABI = [
     {
         "inputs": [],
+        "name": "acceptOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "stateMutability": "nonpayable",
         "type": "constructor"
     },
@@ -45,6 +52,24 @@ exports.CONTRACT_ABI = [
         ],
         "name": "ChainlinkRequested",
         "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "_requestId",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_rsi",
+                "type": "uint256"
+            }
+        ],
+        "name": "fulfill",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
     },
     {
         "anonymous": false,
@@ -124,7 +149,26 @@ exports.CONTRACT_ABI = [
     },
     {
         "inputs": [],
-        "name": "acceptOwnership",
+        "name": "requestMarketData",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "requestId",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "newUrl",
+                "type": "string"
+            }
+        ],
+        "name": "setApiUrl",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -132,19 +176,34 @@ exports.CONTRACT_ABI = [
     {
         "inputs": [
             {
-                "internalType": "bytes32",
-                "name": "_requestId",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_rsi",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
             }
         ],
-        "name": "fulfill",
+        "name": "transferOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "withdrawLink",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "getApiUrl",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -175,19 +234,6 @@ exports.CONTRACT_ABI = [
     },
     {
         "inputs": [],
-        "name": "requestMarketData",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "requestId",
-                "type": "bytes32"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "rsi",
         "outputs": [
             {
@@ -197,26 +243,6 @@ exports.CONTRACT_ABI = [
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "to",
-                "type": "address"
-            }
-        ],
-        "name": "transferOwnership",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "withdrawLink",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     }
 ];
