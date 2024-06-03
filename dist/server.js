@@ -52,13 +52,19 @@ const wallet = new ethers_1.ethers.Wallet(WALLET_PRIVATE_KEY, provider);
 const contractWrite = new ethers_1.ethers.Contract(CONTRACT_ADDRESS, ContractABI_1.CONTRACT_ABI, wallet);
 const nftContractWrite = new ethers_1.ethers.Contract(NFT_CONTRACT_ADDRESS, NFTContractABI_1.NFT_CONTRACT_ABI, wallet);
 // Schedule cron job to update 
+let logger = node_cron_1.default.schedule('* * * * *', () => console.log("Logging \n"));
 // Plant Growth Based on Contract RSI
 // Runs at midnight every day
-node_cron_1.default.schedule('0 0 * * *', () => (0, updatePlantGrowthBasedOnRSI_1.updatePlantGrowthBasedOnRSI)(supabase, contractWrite, MARKET_CONDITION_UUID));
+let rsiJob = node_cron_1.default.schedule('0 0 * * *', () => {
+    console.log('Cron job for UPDATING RSI scheduled to run at:', new Date().toISOString());
+    (0, updatePlantGrowthBasedOnRSI_1.updatePlantGrowthBasedOnRSI)(supabase, contractWrite, MARKET_CONDITION_UUID)
+        .then(() => console.log('Cron job executed successfully.'))
+        .catch((error) => console.error('Failed to execute cron job:', error));
+});
 // Cron Job to update Plant Health
 // Schedule the cron job to run at 6 AM and 6 PM EST
-node_cron_1.default.schedule('0 6,18 * * *', () => {
-    console.log('Cron job triggered');
+let healthJob = node_cron_1.default.schedule('0 6,18 * * *', () => {
+    console.log('Cron job for PLANT HEALTH scheduled to run at:', new Date().toISOString());
     (0, updatePlantHealth_1.updatePlantHealth)(supabase);
 }, {
     scheduled: true,
@@ -66,9 +72,13 @@ node_cron_1.default.schedule('0 6,18 * * *', () => {
 });
 // Cron Job to update Plant XP
 // If XP is over threshold
-node_cron_1.default.schedule('0 0 * * *', () => (0, updatePlantXP_1.updatePlantXP)(supabase));
+let xpJob = node_cron_1.default.schedule('* * * * *', () => {
+    // let xpJob = cron.schedule('0 0 * * *', () => {
+    console.log('Cron job to UPDATE PLANT XP scheduled to run at:', new Date().toISOString());
+    (0, updatePlantXP_1.updatePlantXP)(supabase);
+});
 (0, updatePlantGrowthBasedOnRSI_1.updatePlantGrowthBasedOnRSI)(supabase, contractWrite, MARKET_CONDITION_UUID);
-// updatePlantHealth(supabase);
+(0, updatePlantHealth_1.updatePlantHealth)(supabase);
 // Define any routes as necessary
 app.get('/health', (req, res) => {
     res.send('Econobloom NFT Service Running');
@@ -148,4 +158,8 @@ app.listen(process.env.PORT || 5000, () => {
     (0, growEventListener_1.growEventListener)(supabase, nftContract);
     (0, mintEventListener_1.mintEventListener)(supabase, nftContract, MARKET_CONDITION_UUID); // Setup the blockchain event listener
     console.log('Listening for mint events...');
+    rsiJob.start();
+    healthJob.start();
+    xpJob.start();
+    logger.start();
 });

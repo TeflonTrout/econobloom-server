@@ -43,14 +43,22 @@ const contractWrite = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, wallet
 const nftContractWrite = new ethers.Contract(NFT_CONTRACT_ADDRESS, NFT_CONTRACT_ABI, wallet);
 
 // Schedule cron job to update 
+
+let logger = cron.schedule('*/12 * * * *', () => console.log("Keeping Server Alive \n"))
+
 // Plant Growth Based on Contract RSI
 // Runs at midnight every day
-cron.schedule('0 0 * * *', () => updatePlantGrowthBasedOnRSI(supabase, contractWrite, MARKET_CONDITION_UUID)); 
+let rsiJob = cron.schedule('0 0 * * *', () => {
+    console.log('Cron job for UPDATING RSI scheduled to run at:', new Date().toISOString());
+    updatePlantGrowthBasedOnRSI(supabase, contractWrite, MARKET_CONDITION_UUID)
+        .then(() => console.log('Cron job executed successfully.'))
+        .catch((error) => console.error('Failed to execute cron job:', error));
+}); 
 
 // Cron Job to update Plant Health
 // Schedule the cron job to run at 6 AM and 6 PM EST
-cron.schedule('0 6,18 * * *', () => {
-    console.log('Cron job triggered');
+let healthJob = cron.schedule('0 6,18 * * *', () => {
+    console.log('Cron job for PLANT HEALTH scheduled to run at:', new Date().toISOString());
     updatePlantHealth(supabase);
 }, {
     scheduled: true,
@@ -59,10 +67,13 @@ cron.schedule('0 6,18 * * *', () => {
 
 // Cron Job to update Plant XP
 // If XP is over threshold
-cron.schedule('0 0 * * *', () => updatePlantXP(supabase));
+let xpJob = cron.schedule('0 0 * * *', () => {
+    console.log('Cron job to UPDATE PLANT XP scheduled to run at:', new Date().toISOString());
+    updatePlantXP(supabase)
+});
 
 updatePlantGrowthBasedOnRSI(supabase, contractWrite, MARKET_CONDITION_UUID)
-// updatePlantHealth(supabase);
+updatePlantHealth(supabase);
 
 // Define any routes as necessary
 app.get('/health', (req, res) => {
@@ -146,4 +157,8 @@ app.listen(process.env.PORT || 5000, () => {
     growEventListener(supabase, nftContract)
     mintEventListener(supabase, nftContract, MARKET_CONDITION_UUID);  // Setup the blockchain event listener
     console.log('Listening for mint events...');
+    rsiJob.start()
+    healthJob.start()
+    xpJob.start()
+    logger.start()
 });
